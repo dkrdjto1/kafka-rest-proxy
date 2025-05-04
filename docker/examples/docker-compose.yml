@@ -1,0 +1,17 @@
+services:
+  test:
+    image: kafka-rest-proxy:latest
+    ports:
+      - 8080:8080
+    environment:
+      KAFKA_REST_PROXY_CONFIG: |+
+        bootstrap:
+          servers: 172.17.25.20:9093,172.17.25.21:9093,172.17.25.22:9093
+
+        client:
+          protocol: SASL_PLAINTEXT
+          sasl-mechanism: SCRAM-SHA-512
+          username: admin
+          password: admin-secret
+
+

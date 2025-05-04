@@ -1,0 +1,13 @@
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+server:
+  port: 8080
+  tomcat:
+    max-keep-alive-requests: 100
+    keep-alive-timeout: 300000
+
+logging:
+  config: config/logback.xml

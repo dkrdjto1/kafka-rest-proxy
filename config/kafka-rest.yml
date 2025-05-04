@@ -1,0 +1,73 @@
+# 1. protocol : PLAINTEXT
+# bootstrap:
+#   servers: 172.17.25.40:9092,172.17.25.41:9092,172.17.25.42:9092
+
+# 2. protocol : SASL_PLAINTEXT && mechanism : PLAIN
+# bootstrap:
+#   servers: 172.17.25.60:9093,172.17.25.61:9093,172.17.25.62:9093
+
+# client:
+#   protocol: SASL_PLAINTEXT
+#   sasl-mechanism: PLAIN
+#   username: admin
+#   password: admin-secret
+
+# 3. protocol : SASL_PLAINTEXT && mechanism : SCRAM-SHA-256
+# bootstrap:
+#   servers: 172.17.25.60:9093,172.17.25.61:9093,172.17.25.62:9093
+
+# client:
+#   protocol: SASL_PLAINTEXT
+#   sasl-mechanism: SCRAM-SHA-256
+#   username: admin
+#   password: admin-secret
+
+# 4. protocol : SASL_PLAINTEXT && mechanism : SCRAM-SHA-512 (S/R test)
+bootstrap:
+  servers: 172.17.25.20:9093,172.17.25.21:9093,172.17.25.22:9093
+
+client:
+  protocol: SASL_PLAINTEXT
+  sasl-mechanism: SCRAM-SHA-512
+  username: admin
+  password: admin-secret
+
+schema:
+  registry:
+    url: 172.17.25.31:8081
+    username: admin
+    password: 123456
+    
+ignore-ssl-validation: TRUE
+
+# 5. protocol : SASL_SSL (TLS) && mechanism : SCRAM-SHA-512
+# bootstrap:
+#   servers: 172.17.25.20:9094,172.17.25.21:9094,172.17.25.22:9094
+
+# client:
+#   protocol: SASL_SSL
+#   sasl-mechanism: SCRAM-SHA-512
+#   username: admin
+#   password: admin-secret
+#   ssl:
+#     truststore-location: ./config/ssl/truststore.jks
+#     truststore-password: 123456
+#     truststore-type: PKCS12
+#     endpoint-identification-algorithm:
+
+# 6. protocol : SSL (mTLS) && mechanism : PLAIN
+# bootstrap:
+#   servers: 172.17.25.40:9095,172.17.25.41:9095,172.17.25.42:9095
+
+# client:
+#   protocol: SSL
+#   sasl-mechanism: PLAIN
+#   ssl:
+#     truststore-location: ./config/ssl/truststore.jks
+#     truststore-password: 123456
+#     truststore-type: PKCS12
+#     keystore-location: ./config/ssl/keystore.jks
+#     keystore-password: 123456
+#     keystore-type: PKCS12
+#     key-password: 123456
+#     endpoint-identification-algorithm:

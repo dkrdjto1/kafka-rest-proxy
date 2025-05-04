@@ -1,0 +1,66 @@
+# run workflow only main
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      when: always
+    - when: never
+
+stages:
+  - build
+  - push
+
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+  GIT_BRANCH: $CI_COMMIT_BRANCH
+
+default:
+  before_script:
+    ## rename CI_PROJECT_NAME
+    - export CI_PROJECT_NAME=kafka-rest-proxy
+    ## export VERSION
+    - export VERSION=`cat VERSION`
+    - export SVERSION=${VERSION%.*}
+    - export MVERSION=${SVERSION%.*}
+    - export BRNACH_TAG=""; export L_TAG="latest";
+
+build:image:docker:
+  # Replace with your own path
+  image: myrepo/buildpack:1.19.4-centos7
+  stage: build
+  script:
+    - make -C docker 
+    - docker image tag $CI_PROJECT_NAME:$VERSION $CI_REGISTRY_IMAGE:$VERSION
+    - docker image tag $CI_PROJECT_NAME:$VERSION $CI_REGISTRY_IMAGE:$SVERSION  
+    - docker image tag $CI_PROJECT_NAME:$VERSION $CI_REGISTRY_IMAGE:$MVERSION
+    - docker image tag $CI_PROJECT_NAME:$VERSION $CI_REGISTRY_IMAGE:latest
+
+# push:image:local:
+#   stage: push
+#   needs:
+#     - build:image:docker
+#   dependencies:
+#     - build:image:docker
+#   only:
+#     - main
+#   script:
+#     - docker push $CI_REGISTRY_IMAGE:$VERSION$BRANCH_TAG
+#     - docker push $CI_REGISTRY_IMAGE:$SVERSION$BRANCH_TAG
+#     - docker push $CI_REGISTRY_IMAGE:$MVERSION$BRANCH_TAG
+#     - docker push $CI_REGISTRY_IMAGE:$L_TAG
+
+push:image:dockerhub:
+  stage: push
+  needs:
+    - build:image:docker
+  dependencies:
+    - build:image:docker
+  only:
+    - main
+  # Replace with your own path
+  script:
+      - docker tag $CI_REGISTRY_IMAGE:$VERSION$BRANCH_TAG myrepo/$CI_PROJECT_NAME:$VERSION$BRANCH_TAG
+      - docker push myrepo/$CI_PROJECT_NAME:$VERSION$BRANCH_TAG
+      - docker tag $CI_REGISTRY_IMAGE:$VERSION$BRANCH_TAG myrepo/$CI_PROJECT_NAME:$SVERSION$BRANCH_TAG
+      - docker push myrepo/$CI_PROJECT_NAME:$SVERSION$BRANCH_TAG
+      - docker tag $CI_REGISTRY_IMAGE:$VERSION$BRANCH_TAG myrepo/$CI_PROJECT_NAME:$MVERSION$BRANCH_TAG
+      - docker push myrepo/$CI_PROJECT_NAME:$MVERSION$BRANCH_TAG

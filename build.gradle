@@ -1,0 +1,81 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.0.0'
+	id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'proxy'
+version = file("VERSION").text.trim()
+
+java {
+	sourceCompatibility = '17'
+}
+
+bootJar {
+    archiveBaseName = 'kafka-rest-proxy' 
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	
+	// REST api 문서화 용도 (swagger)
+	// http://localhost:8080/swagger-ui/index.html
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// Apache Kafka
+	// https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients
+    implementation 'org.apache.kafka:kafka-clients:3.5.1'
+	
+	// caffeine cache
+    // https://docs.spring.io/spring-boot/docs/2.1.6.RELEASE/reference/html/boot-features-caching.html#boot-features-caching-provider-caffeine
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'com.github.ben-manes.caffeine:caffeine'
+	
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    implementation 'com.google.guava:guava:31.1-jre'
+
+	// https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java
+	implementation 'com.google.protobuf:protobuf-java:3.25.1'
+
+	// Schema Registry http 통신 용도
+	// https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+
+	// avro schema
+	// https://mvnrepository.com/artifact/org.apache.avro/avro
+	implementation 'org.apache.avro:avro:1.11.3'
+
+	// jsonschema validation
+	// https://mvnrepository.com/artifact/com.github.java-json-tools/json-schema-validator
+	implementation 'com.github.java-json-tools:json-schema-validator:2.2.14'
+
+	// protobuf schema
+	// https://mvnrepository.com/artifact/com.google.protobuf/protobuf-java-util
+	implementation 'com.google.protobuf:protobuf-java-util:3.25.1'
+}
+
+tasks.named('bootBuildImage') {
+	builder = 'paketobuildpacks/builder-jammy-base:latest'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
